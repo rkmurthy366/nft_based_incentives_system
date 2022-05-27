@@ -9,7 +9,32 @@ export default function Home() {
   const [walletConnected, setWalletConnected] = useState(false);
   const [loading, setLoading] = useState(false);
   const [tokenIdsMinted, setTokenIdsMinted] = useState("0");
+
+  // Extra
+  const [movieName, setMovieName] = useState("");
+  const [review, setReview] = useState("");
+  const [movieReviewList, setMovieList] = useState([]);
+
+  // useEffect(() => {
+  //   Axios.get("http://localhost:3000/api/get").then((response) => {
+  //     console.log(response.data);
+  //     setMovieList(response.data
+  //       // EXTRA
+  //   });
+  // }, []);
+
+  // const submitReview = () => {
+  //   Axios.post("http://localhost:3000/api/insert", {
+  //     movieName: movieName,
+  //     movieReview: review,
+  //   }).then(() => {
+  //     alert("sucessfull insert");
+  //   });
+  // };
+
   const web3ModalRef = useRef();
+  let celebName = "Pokemon";
+  let celebNameEvent = "Gardening";
 
   const publicMint = async () => {
     try {
@@ -94,7 +119,11 @@ export default function Home() {
     }
 
     if (loading) {
-      return <button className={styles.button}>Loading...</button>;
+      return (
+        <button disabled={loading} className={styles.button}>
+          Loading...
+        </button>
+      );
     }
 
     return (
@@ -107,19 +136,24 @@ export default function Home() {
   return (
     <div className={styles.body}>
       <Head>
-        <title>SM_Quotes</title>
+        <title>Celeb_1</title>
         <meta name="description" content="SM_Quotes-Dapp" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+      <nav className={styles.navMenu}>
+        <div className={styles.navTitle}>{celebNameEvent}</div>
+      </nav>
       <div className={styles.main}>
         <div>
-          <h1 className={styles.title}>Welcome to SM_Quotes NFT collection!</h1>
+          <h1 className={styles.title}>
+            Welcome to {celebNameEvent} NFT collection!
+          </h1>
           <div className={styles.description}>
-            Mint a quote of Sandeep Maheshwari and have it in your NFT
-            portfolio.
+            Congratulations!! you have successfully completed the tasks, so as
+            for the reward you get to mint this NFT and enjoy the benifits
           </div>
           <div className={styles.description}>
-            {tokenIdsMinted} have been minted
+            {tokenIdsMinted} people have been minted this NFT so far!!
           </div>
           {renderButton()}
         </div>
@@ -127,7 +161,36 @@ export default function Home() {
           <img className={styles.image} src="./LW3punks/1.png" />
         </div> */}
       </div>
-      <footer className={styles.footer}>Made with &#10084; by SM_Quotes</footer>
+
+      {/* EXTRA
+      <h1>CRUD Applications</h1>
+      <div className={styles.form}>
+        <label>Movie Name:</label>
+        <input
+          type="text"
+          name="movieName"
+          onChange={(e) => {
+            setMovieName(e.target.value);
+          }}
+        />
+        <label>Review:</label>
+        <input
+          type="text"
+          name="review"
+          onChange={(e) => {
+            setReview(e.target.value);
+          }}
+        />
+        <button onClick={submitReview}>Submit</button>
+
+        {movieReviewList.map((val)=>{
+          return <h1>movieName: {val.movieName} | movieReview: {val.movieReview}</h1>
+        })}
+      </div> */}
+
+      <footer className={styles.footer}>
+        Made with &#10084; by Fantastic Four
+      </footer>
     </div>
   );
 }
