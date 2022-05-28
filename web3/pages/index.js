@@ -1,7 +1,7 @@
 import { Contract, providers, utils } from "ethers";
 import Head from "next/head";
 import React, { useEffect, useRef, useState } from "react";
-import Axios from "axios";
+// import Axios from "axios";
 import Web3Modal from "web3modal";
 import {
   VK_NFT,
