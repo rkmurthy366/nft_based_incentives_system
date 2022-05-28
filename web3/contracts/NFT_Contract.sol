@@ -18,7 +18,7 @@ contract NFT_Contract is ERC721Enumerable, Ownable {
     }
 
     // Edit
-    constructor(string memory baseURI) ERC721("ViratKohli_NFT", "VK") {
+    constructor(string memory baseURI) ERC721("SM_Quote", "SM") {
         _baseTokenURI = baseURI;
     }
 
