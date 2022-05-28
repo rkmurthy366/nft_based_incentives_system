@@ -1,54 +1,86 @@
 import { Contract, providers, utils } from "ethers";
 import Head from "next/head";
 import React, { useEffect, useRef, useState } from "react";
+import Axios from "axios";
 import Web3Modal from "web3modal";
-import { abi, NFT_CONTRACT_ADDRESS } from "../constants";
+import {
+  VK_NFT,
+  VK_NFT_ABI,
+  PVS_NFT,
+  PVS_NFT_ABI,
+  MESSI_NFT,
+  MESSI_NFT_ABI,
+} from "../constants";
 import styles from "../styles/Home.module.css";
 
 export default function Home() {
   const [walletConnected, setWalletConnected] = useState(false);
   const [loading, setLoading] = useState(false);
   const [tokenIdsMinted, setTokenIdsMinted] = useState("0");
+  let contractAddr = "";
+  let contractABI = "";
+  let celebNameEvent = "Gardening";
+  let celebName = "Pokemon";
 
   // Extra
   const [movieName, setMovieName] = useState("");
   const [review, setReview] = useState("");
   const [movieReviewList, setMovieList] = useState([]);
 
-  // useEffect(() => {
-  //   Axios.get("http://localhost:3000/api/get").then((response) => {
-  //     console.log(response.data);
-  //     setMovieList(response.data
-  //       // EXTRA
-  //   });
-  // }, []);
+  useEffect(() => {
+    Axios.get("http://localhost:3000/api/get").then((response) => {
+      console.log(response.data);
+      setMovieList(response.data);
+      // EXTRA
+    });
+  }, []);
 
-  // const submitReview = () => {
-  //   Axios.post("http://localhost:3000/api/insert", {
-  //     movieName: movieName,
-  //     movieReview: review,
-  //   }).then(() => {
-  //     alert("sucessfull insert");
-  //   });
-  // };
+  const submitReview = () => {
+    Axios.post("http://localhost:3001/api/insert", {
+      movieName: movieName,
+      movieReview: review,
+    });
+    setMovieList([
+      ...movieReviewList,
+      { movieName: movieName, movieReview: review },
+    ]);
+  };
+
+  // Set NFT_addr, NFT_ABI by accessing data from SQL
+  // use useEffect, fetch data from sql and then take decision
+  let condition = true;
+  if (condition) {
+    // VK NFT
+    contractAddr = VK_NFT;
+    contractABI = VK_NFT_ABI;
+  } else if (condition) {
+    // PVS NFT
+    contractAddr = PVS_NFT;
+    contractABI = PVS_NFT_ABI;
+  } else if (condition) {
+    // Messi NFT
+    contractAddr = MESSI_NFT;
+    contractABI = MESSI_NFT_ABI;
+  } else {
+    contractAddr = "";
+    contractABI = "";
+  }
 
   const web3ModalRef = useRef();
-  let celebName = "Pokemon";
-  let celebNameEvent = "Gardening";
 
   const publicMint = async () => {
     try {
-      const signer = await getProviderOrSigner(true);
-      const nftContract = new Contract(NFT_CONTRACT_ADDRESS, abi, signer);
-      const tx = await nftContract.mint({
-        value: utils.parseEther("0.01"),
-      });
-
-      setLoading(true);
-      await tx.wait();
-      setLoading(false);
-
-      window.alert("You successfully minted a SM_Quote!");
+      if (contractABI || contractAddr) {
+        const signer = await getProviderOrSigner(true);
+        const nftContract = new Contract(contractAddr, contractABI, signer);
+        const tx = await nftContract.mint({
+          value: utils.parseEther("0"),
+        });
+        setLoading(true);
+        await tx.wait();
+        setLoading(false);
+        window.alert(`You successfully claimed the NFT!!`);
+      }
     } catch (err) {
       console.error(err);
     }
@@ -65,12 +97,12 @@ export default function Home() {
 
   const getTokenIdsMinted = async () => {
     try {
-      const provider = await getProviderOrSigner();
-      const nftContract = new Contract(NFT_CONTRACT_ADDRESS, abi, provider);
-
-      const _tokenIds = await nftContract.tokenIds();
-
-      setTokenIdsMinted(_tokenIds.toString());
+      if (contractABI || contractAddr) {
+        const provider = await getProviderOrSigner();
+        const nftContract = new Contract(contractAddr, contractABI, provider);
+        const _tokenIds = await nftContract.tokenIds();
+        setTokenIdsMinted(_tokenIds.toString());
+      }
     } catch (err) {
       console.error(err);
     }
@@ -96,7 +128,7 @@ export default function Home() {
   useEffect(() => {
     if (!walletConnected) {
       web3ModalRef.current = new Web3Modal({
-        network: "rinkeby",
+        network: "mumbai",
         providerOptions: {},
         disableInjectedProvider: false,
       });
@@ -136,8 +168,8 @@ export default function Home() {
   return (
     <div className={styles.body}>
       <Head>
-        <title>Celeb_1</title>
-        <meta name="description" content="SM_Quotes-Dapp" />
+        <title>{celebNameEvent}</title>
+        <meta name="description" content="Celeb-NFTs" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <nav className={styles.navMenu}>
@@ -162,7 +194,6 @@ export default function Home() {
         </div> */}
       </div>
 
-      {/* EXTRA
       <h1>CRUD Applications</h1>
       <div className={styles.form}>
         <label>Movie Name:</label>
@@ -183,10 +214,14 @@ export default function Home() {
         />
         <button onClick={submitReview}>Submit</button>
 
-        {movieReviewList.map((val)=>{
-          return <h1>movieName: {val.movieName} | movieReview: {val.movieReview}</h1>
+        {movieReviewList.map((val) => {
+          return (
+            <h1>
+              movieName: {val.movieName} | movieReview: {val.movieReview}
+            </h1>
+          );
         })}
-      </div> */}
+      </div>
 
       <footer className={styles.footer}>
         Made with &#10084; by Fantastic Four
